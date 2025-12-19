@@ -1,0 +1,43 @@
+name: CI MLflow Training
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'MLProject/**'
+
+permissions:
+  contents: write
+
+jobs:
+  train-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.7'
+
+      - name: Install MLflow & Dependencies
+        run: |
+          pip install mlflow pandas numpy scikit-learn matplotlib seaborn
+
+      - name: Run MLflow Project
+        run: |
+          cd MLProject
+          mlflow run . --no-conda
+
+      - name: Commit and Push Artifacts
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+          git add MLProject/mlruns
+
+          git commit -m "Auto-save: MLflow artifacts from CI" || echo "No changes to commit"
+          git push
