@@ -1,4 +1,4 @@
-name: CI MLflow Training
+name: CI MLflow Training Workflow
 
 on:
   push:
@@ -11,23 +11,24 @@ permissions:
   contents: write
 
 jobs:
-  train-model:
+  build-and-retrain:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python Environment
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.7'
 
-      - name: Install MLflow & Dependencies
+      - name: Install Dependencies
         run: |
-          pip install mlflow pandas numpy scikit-learn matplotlib seaborn
+          python -m pip install --upgrade pip
+          pip install mlflow pandas numpy scikit-learn matplotlib seaborn requests
 
-      - name: Run MLflow Project
+      - name: Execute MLflow Training
         run: |
           cd MLProject
           mlflow run . --env-manager=local
@@ -38,6 +39,5 @@ jobs:
           git config --global user.email "actions@github.com"
 
           git add MLProject/mlruns
-
-          git commit -m "Auto-save: MLflow artifacts from CI" || echo "No changes to commit"
+          git commit -m "Auto-save: MLflow artifacts from CI [Skip CI]" || echo "No changes to commit"
           git push
