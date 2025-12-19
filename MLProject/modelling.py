@@ -33,10 +33,9 @@ def train_model():
     X_test = test_df.drop("Potability", axis=1)
     y_test = test_df["Potability"]
 
-    mlflow.set_experiment("Modelling without Tuning")
     mlflow.sklearn.autolog()
 
-    with mlflow.start_run(run_name="RandomForest"):
+    with mlflow.start_run() as run:
         print("[INFO] Training model...")
 
         n_estimators = 200
